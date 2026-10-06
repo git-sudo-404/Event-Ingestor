@@ -23,3 +23,49 @@
  */
 
 package events
+
+type SystemMetricType string
+
+const (
+	SystemCPU     SystemMetricType = "system.cpu"
+	SystemMemory  SystemMetricType = "system.memory"
+	SystemDisk    SystemMetricType = "system.disk"
+	SystemNetwork SystemMetricType = "system.network"
+	SystemLoad    SystemMetricType = "system.load"
+	SystemProcess SystemMetricType = "system.process"
+)
+
+type SystemMetricEvent struct {
+	EventMetaData
+
+	Host       string            `json:"host"`
+	MetricType SystemMetricType  `json:"metric_type"`
+	Value      float64           `json:"value"`
+	Unit       string            `json:"unit"`
+	Metadata   map[string]string `json:"metadata,omitempty"`
+}
+
+func (sme *SystemMetricEvent) SetHost(Host string) *SystemMetricEvent {
+	sme.Host = Host
+	return sme
+}
+
+func (sme *SystemMetricEvent) SetMetricType(MetricType SystemMetricType) *SystemMetricEvent {
+	sme.MetricType = MetricType
+	return sme
+}
+
+func (sme *SystemMetricEvent) SetValue(Value float64) *SystemMetricEvent {
+	sme.Value = Value
+	return sme
+}
+
+func (sme *SystemMetricEvent) SetUnit(Unit string) *SystemMetricEvent {
+	sme.Unit = Unit
+	return sme
+}
+
+func (sme *SystemMetricEvent) SetMetadata(Metadata map[string]string) *SystemMetricEvent {
+	sme.Metadata = Metadata
+	return sme
+}

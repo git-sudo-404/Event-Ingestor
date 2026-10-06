@@ -23,3 +23,64 @@
  */
 
 package events
+
+type TransactionType string
+
+const (
+	TransactionOrderCreated      TransactionType = "order_created"
+	TransactionPaymentCompleted  TransactionType = "payment_completed"
+	TransactionPaymentFailed     TransactionType = "payment_failed"
+	TransactionRefund            TransactionType = "refund"
+	TransactionShipmentCreated   TransactionType = "shipment_created"
+	TransactionShipmentDelivered TransactionType = "shipment_delivered"
+)
+
+type TransactionStatus string
+
+const (
+	TransactionPending   TransactionStatus = "PENDING"
+	TransactionCompleted TransactionStatus = "COMPLETED"
+	TransactionFailed    TransactionStatus = "FAILED"
+	TransactionRefunded  TransactionStatus = "REFUNDED"
+)
+
+type TransactionEvent struct {
+	EventMetaData
+
+	TransactionID string            `json:"transaction_id"`
+	Type          TransactionType   `json:"type"`
+	Amount        *float64          `json:"amount,omitempty"`
+	Currency      *string           `json:"currency,omitempty"`
+	Status        TransactionStatus `json:"status"`
+	Metadata      map[string]string `json:"metadata,omitempty"`
+}
+
+func (te *TransactionEvent) SetTransactionID(TransactionID string) *TransactionEvent {
+	te.TransactionID = TransactionID
+	return te
+}
+
+func (te *TransactionEvent) SetType(Type TransactionType) *TransactionEvent {
+	te.Type = Type
+	return te
+}
+
+func (te *TransactionEvent) SetAmount(Amount float64) *TransactionEvent {
+	te.Amount = &Amount
+	return te
+}
+
+func (te *TransactionEvent) SetCurrency(Currency string) *TransactionEvent {
+	te.Currency = &Currency
+	return te
+}
+
+func (te *TransactionEvent) SetStatus(Status TransactionStatus) *TransactionEvent {
+	te.Status = Status
+	return te
+}
+
+func (te *TransactionEvent) SetMetadata(Metadata map[string]string) *TransactionEvent {
+	te.Metadata = Metadata
+	return te
+}

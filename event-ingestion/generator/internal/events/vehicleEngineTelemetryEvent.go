@@ -24,47 +24,33 @@
 
 package events
 
-type IOTEventType string
-
-const (
-	IOTTemperature IOTEventType = "iot.temperature"
-	IOTHumidity    IOTEventType = "iot.humidity"
-	IOTPressure    IOTEventType = "iot.pressure"
-	IOTVibration   IOTEventType = "iot.vibration"
-	IOTAirQuality  IOTEventType = "iot.air_quality"
-	IOTPower       IOTEventType = "iot.power"
-)
-
-type IOTEvent struct {
+type EngineTelemetryEvent struct {
 	EventMetaData
-	DeviceID   string            `json:"device_id"`
-	SensorType IOTEventType      `json:"sensor_type"`
-	Value      float64           `json:"value"`
-	Unit       string            `json:"unit"`
-	Metadata   map[string]string `json:"metadata,omitempty"`
+	RPM           float64 `json:"rpm"`             // engine rotations per minute
+	CoolantTempC  float64 `json:"coolant_temp_c"`  // temperature in °C
+	EngineLoadPct float64 `json:"engine_load_pct"` // percentage of engine capacity currently being used
 }
 
-func (ie *IOTEvent) SetDeviceID(DeviceID string) *IOTEvent {
-	ie.DeviceID = DeviceID
-	return ie
+func NewEngineTelemetryEvent() *EngineTelemetryEvent {
+	return &EngineTelemetryEvent{
+		EventMetaData: NewEventMetaData(),
+		RPM:           0,
+		CoolantTempC:  0,
+		EngineLoadPct: 0,
+	}
 }
 
-func (ie *IOTEvent) SetSensorType(SensorType IOTEventType) *IOTEvent {
-	ie.SensorType = SensorType
-	return ie
+func (ete *EngineTelemetryEvent) SetRPM(RPM float64) *EngineTelemetryEvent {
+	ete.RPM = RPM
+	return ete
 }
 
-func (ie *IOTEvent) SetValue(Value float64) *IOTEvent {
-	ie.Value = Value
-	return ie
+func (ete *EngineTelemetryEvent) SetCoolantTempC(CoolantTempC float64) *EngineTelemetryEvent {
+	ete.CoolantTempC = CoolantTempC
+	return ete
 }
 
-func (ie *IOTEvent) SetUnit(Unit string) *IOTEvent {
-	ie.Unit = Unit
-	return ie
-}
-
-func (ie *IOTEvent) SetMetadata(Metadata map[string]string) *IOTEvent {
-	ie.Metadata = Metadata
-	return ie
+func (ete *EngineTelemetryEvent) SetEngineLoadPct(EngineLoadPct float64) *EngineTelemetryEvent {
+	ete.EngineLoadPct = EngineLoadPct
+	return ete
 }

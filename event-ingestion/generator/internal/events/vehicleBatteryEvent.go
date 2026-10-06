@@ -24,24 +24,34 @@
 
 package events
 
-type LogLevel string
-
-const (
-	LogDebug LogLevel = "DEBUG"
-	LogInfo  LogLevel = "INFO"
-	LogWarn  LogLevel = "WARN"
-	LogError LogLevel = "ERROR"
-)
-
-type ApplicationLogEvent struct {
+type BatteryEvent struct {
 	EventMetaData
-	Level      string            `json:"level"` // INFO, WARN, ERROR, DEBUG
-	Service    string            `json:"service"`
-	Message    string            `json:"message"`
-	RequestID  *string           `json:"request_id,omitempty"`
-	TraceID    *string           `json:"trace_id,omitempty"`
-	Host       *string           `json:"host,omitempty"`
-	StatusCode *int              `json:"status_code,omitempty"`
-	LatencyMs  *float64          `json:"latency_ms,omitempty"` // request processing time in milliseconds
-	Metadata   map[string]string `json:"metadata,omitempty"`   // extra context associated with the log
+	VoltageV         float64  `json:"voltage_v"`                     // battery voltage
+	CurrentA         *float64 `json:"current_a,omitempty"`           // current flowing through the battery in amps
+	TemperatureC     *float64 `json:"temperature_c,omitempty"`       // battery temperature in °C
+	StateOfChargePct *float64 `json:"state_of_charge_pct,omitempty"` // estimated battery charge remaining as a percentage
+}
+
+func NewBatteryEvent() *BatteryEvent {
+	return &BatteryEvent{
+		EventMetaData: NewEventMetaData(),
+		VoltageV:      0,
+	}
+}
+
+func (be *BatteryEvent) SetVolateV(VoltageV float64) *BatteryEvent {
+	be.VoltageV = VoltageV
+	return be
+}
+func (be *BatteryEvent) SetCurrentA(CurrentA float64) *BatteryEvent {
+	be.CurrentA = &CurrentA
+	return be
+}
+func (be *BatteryEvent) SetTemperatureC(TemperatureC float64) *BatteryEvent {
+	be.TemperatureC = &TemperatureC
+	return be
+}
+func (be *BatteryEvent) SetStateOfChargePct(StateOfChargePct float64) *BatteryEvent {
+	be.StateOfChargePct = &StateOfChargePct
+	return be
 }

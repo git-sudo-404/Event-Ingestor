@@ -24,47 +24,41 @@
 
 package events
 
-type IOTEventType string
+type DiagnosticSeverity string
 
 const (
-	IOTTemperature IOTEventType = "iot.temperature"
-	IOTHumidity    IOTEventType = "iot.humidity"
-	IOTPressure    IOTEventType = "iot.pressure"
-	IOTVibration   IOTEventType = "iot.vibration"
-	IOTAirQuality  IOTEventType = "iot.air_quality"
-	IOTPower       IOTEventType = "iot.power"
+	SeverityInfo     DiagnosticSeverity = "INFO"
+	SeverityWarning  DiagnosticSeverity = "WARNING"
+	SeverityCritical DiagnosticSeverity = "CRITICAL"
 )
 
-type IOTEvent struct {
+type DiagnosticEvent struct {
 	EventMetaData
-	DeviceID   string            `json:"device_id"`
-	SensorType IOTEventType      `json:"sensor_type"`
-	Value      float64           `json:"value"`
-	Unit       string            `json:"unit"`
-	Metadata   map[string]string `json:"metadata,omitempty"`
+	Code        string `json:"code"`
+	Severity    string `json:"severity"` // e.g. info, warning, critical
+	Description string `json:"description"`
 }
 
-func (ie *IOTEvent) SetDeviceID(DeviceID string) *IOTEvent {
-	ie.DeviceID = DeviceID
-	return ie
+func NewDiagnosticEvent() *DiagnosticEvent {
+	return &DiagnosticEvent{
+		EventMetaData: NewEventMetaData(),
+		Code:          "",
+		Severity:      "",
+		Description:   "",
+	}
 }
 
-func (ie *IOTEvent) SetSensorType(SensorType IOTEventType) *IOTEvent {
-	ie.SensorType = SensorType
-	return ie
+func (de *DiagnosticEvent) SetCode(Code string) *DiagnosticEvent {
+	de.Code = Code
+	return de
 }
 
-func (ie *IOTEvent) SetValue(Value float64) *IOTEvent {
-	ie.Value = Value
-	return ie
+func (de *DiagnosticEvent) SetSeverity(Severity string) *DiagnosticEvent {
+	de.Severity = Severity
+	return de
 }
 
-func (ie *IOTEvent) SetUnit(Unit string) *IOTEvent {
-	ie.Unit = Unit
-	return ie
-}
-
-func (ie *IOTEvent) SetMetadata(Metadata map[string]string) *IOTEvent {
-	ie.Metadata = Metadata
-	return ie
+func (de *DiagnosticEvent) SetDescription(Description string) *DiagnosticEvent {
+	de.Description = Description
+	return de
 }

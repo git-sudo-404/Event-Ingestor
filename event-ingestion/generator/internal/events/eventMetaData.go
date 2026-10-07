@@ -29,7 +29,7 @@ import "time"
 type EventType string
 
 const (
-	VechicleGPSEvent            EventType = "vehicle.location"
+	VehicleGPSEvent             EventType = "vehicle.location"
 	VehicleEngineTelemetryEvent EventType = "vehicle.engine_telemetry"
 	VehicleDiagnosticEvent      EventType = "vehicle.diagnostic"
 	VehicleFuelEvent            EventType = "vehicle.fuel"

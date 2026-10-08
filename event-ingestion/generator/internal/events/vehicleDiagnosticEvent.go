@@ -32,15 +32,15 @@ const (
 	SeverityCritical DiagnosticSeverity = "CRITICAL"
 )
 
-type DiagnosticEvent struct {
+type VehicleDiagnosticEvent struct {
 	EventMetaData
 	Code        string `json:"code"`
 	Severity    string `json:"severity"` // e.g. info, warning, critical
 	Description string `json:"description"`
 }
 
-func NewDiagnosticEvent() *DiagnosticEvent {
-	return &DiagnosticEvent{
+func NewVehicleDiagnosticEvent() *VehicleDiagnosticEvent {
+	return &VehicleDiagnosticEvent{
 		EventMetaData: NewEventMetaData(),
 		Code:          "",
 		Severity:      "",
@@ -48,17 +48,17 @@ func NewDiagnosticEvent() *DiagnosticEvent {
 	}
 }
 
-func (de *DiagnosticEvent) SetCode(Code string) *DiagnosticEvent {
+func (de *VehicleDiagnosticEvent) SetCode(Code string) *VehicleDiagnosticEvent {
 	de.Code = Code
 	return de
 }
 
-func (de *DiagnosticEvent) SetSeverity(Severity string) *DiagnosticEvent {
+func (de *VehicleDiagnosticEvent) SetSeverity(Severity string) *VehicleDiagnosticEvent {
 	de.Severity = Severity
 	return de
 }
 
-func (de *DiagnosticEvent) SetDescription(Description string) *DiagnosticEvent {
+func (de *VehicleDiagnosticEvent) SetDescription(Description string) *VehicleDiagnosticEvent {
 	de.Description = Description
 	return de
 }

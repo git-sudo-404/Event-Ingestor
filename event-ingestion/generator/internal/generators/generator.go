@@ -24,6 +24,9 @@
 
 package generator
 
-import "generator/internal/config"
+import (
+	"generator/internal/config"
+)
 
 var cfg config.Config
+var EventsChan chan []byte

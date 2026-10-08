@@ -25,9 +25,11 @@
 package generator
 
 import (
+	"math"
 	"math/rand"
 	"strconv"
 	"sync"
+	"time"
 )
 
 var startingPoints = []struct{ lat, lon, alt float64 }{
@@ -69,8 +71,9 @@ type vehicleState struct {
 	StateOfChargePct float64
 
 	//EventMetaData states
-	EventNumber float64
-	mu          sync.Mutex
+	EventNumber   float64
+	SchemaVersion float64
+	mu            sync.Mutex
 }
 
 func CreateNewVehicle(vehicleNumber int) *vehicleState {
@@ -81,14 +84,12 @@ func CreateNewVehicle(vehicleNumber int) *vehicleState {
 	Latitude := point.lat + (rand.Float64()-0.5)*0.01
 	Longitude := point.lon + (rand.Float64()-0.5)*0.01
 	AltitudeM := point.alt
-
 	SpeedKMH := float64(0)
 	HeadingDir := dir[rand.Intn(len(dir))]
-
 	GPSAccuracyM := accuracyM[rand.Intn(len(accuracyM))]
 	OdometerKM := rand.Float64() * 100000
 
-	FuelLevelPct := rand.ExpFloat64() * 100
+	FuelLevelPct := 20 + rand.Float64()*80
 	FuelRateLPH := float64(0)
 	FuelConsumedTotalL := OdometerKM * 8.0 / 100.0
 
@@ -123,9 +124,57 @@ func CreateNewVehicle(vehicleNumber int) *vehicleState {
 		TemperatureC:       TemperatureC,
 		StateOfChargePct:   StateOfChargePct,
 		EventNumber:        EventNumber,
+		SchemaVersion:      float64(1),
 	}
 }
 
-func (v *vehicleState) updateGPSStates() {
+// updateGPSStates returns the distance driven during this update.
+func (v *vehicleState) updateGPSStates(elapsed time.Duration) float64 {
+	seconds := elapsed.Seconds()
+	if seconds <= 0 {
+		return 0
+	}
 
+	previousSpeed := v.SpeedKMH
+	targetSpeed := 25 + rand.Float64()*30
+	change := math.Max(-2*seconds, math.Min(targetSpeed-v.SpeedKMH, 2*seconds))
+	v.SpeedKMH = math.Max(0, math.Min(v.SpeedKMH+change, 60))
+	v.HeadingDir = math.Mod(v.HeadingDir+(rand.Float64()-0.5)*2*seconds+360, 360)
+
+	distanceKM := (previousSpeed + v.SpeedKMH) / 2 * elapsed.Hours()
+	headingRad := v.HeadingDir * math.Pi / 180
+	latitudeRad := v.Latitude * math.Pi / 180
+	v.Latitude += distanceKM * math.Cos(headingRad) / 111.32
+	v.Longitude += distanceKM * math.Sin(headingRad) / (111.32 * math.Cos(latitudeRad))
+	v.OdometerKM += distanceKM
+	v.GPSAccuracyM = accuracyM[rand.Intn(len(accuracyM))]
+
+	return distanceKM
+}
+
+func (v *vehicleState) updateEngineStates(elapsed time.Duration) {
+	seconds := elapsed.Seconds()
+	v.RPM = 800 + v.SpeedKMH*30
+	v.EngineLoadPct = math.Min(100, 15+v.SpeedKMH*0.6)
+	v.CoolantTempC += (90 - v.CoolantTempC) * (1 - math.Exp(-seconds/600))
+}
+
+func (v *vehicleState) updateFuelStates(elapsed time.Duration, distanceKM float64) {
+	// A 50 L tank, with idle consumption plus fuel used while driving.
+	fuelUsedL := 0.7*elapsed.Hours() + distanceKM*0.08
+	v.FuelRateLPH = fuelUsedL / elapsed.Hours()
+	v.FuelConsumedTotalL += fuelUsedL
+	v.FuelLevelPct = math.Max(0, v.FuelLevelPct-fuelUsedL/50*100)
+	if v.FuelLevelPct <= 10 {
+		v.FuelLevelPct = 80 + rand.Float64()*20
+	}
+}
+
+func (v *vehicleState) updateBatteryStates(elapsed time.Duration) {
+	seconds := elapsed.Seconds()
+	// The running alternator charges the 12 V battery.
+	v.CurrentA = math.Max(0.5, (100-v.StateOfChargePct)*0.3)
+	v.StateOfChargePct = math.Min(100, v.StateOfChargePct+v.CurrentA*elapsed.Hours()/60*100)
+	v.VoltageV = 14.0
+	v.TemperatureC += (30 - v.TemperatureC) * (1 - math.Exp(-seconds/900))
 }

@@ -24,29 +24,29 @@
 
 package events
 
-type FuelEvent struct {
+type VehicleFuelEvent struct {
 	EventMetaData
 	FuelLevelPct       float64  `json:"fuel_level_pct"`                  // percentage of fuel remaining in the tank
 	FuelRateLPH        *float64 `json:"fuel_rate_lph,omitempty"`         // fuel consumed per hour in litres
 	FuelConsumedTotalL *float64 `json:"fuel_consumed_total_l,omitempty"` // total fuel consumed in litres
 }
 
-func NewFuelEvent() *FuelEvent {
-	return &FuelEvent{
+func NewVehicleFuelEvent() *VehicleFuelEvent {
+	return &VehicleFuelEvent{
 		EventMetaData: NewEventMetaData(),
 		FuelLevelPct:  0,
 	}
 }
 
-func (fe *FuelEvent) SetFuelLevelPct(FuelLevelPct float64) *FuelEvent {
+func (fe *VehicleFuelEvent) SetFuelLevelPct(FuelLevelPct float64) *VehicleFuelEvent {
 	fe.FuelLevelPct = FuelLevelPct
 	return fe
 }
-func (fe *FuelEvent) SetFuelRateLPH(FuelRateLPH float64) *FuelEvent {
+func (fe *VehicleFuelEvent) SetFuelRateLPH(FuelRateLPH float64) *VehicleFuelEvent {
 	fe.FuelRateLPH = &FuelRateLPH
 	return fe
 }
-func (fe *FuelEvent) SetFuelConsumedTotalL(FuelConsumedTotalL float64) *FuelEvent {
+func (fe *VehicleFuelEvent) SetFuelConsumedTotalL(FuelConsumedTotalL float64) *VehicleFuelEvent {
 	fe.FuelConsumedTotalL = &FuelConsumedTotalL
 	return fe
 }

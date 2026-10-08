@@ -24,15 +24,15 @@
 
 package events
 
-type EngineTelemetryEvent struct {
+type VehicleEngineTelemetryEvent struct {
 	EventMetaData
 	RPM           float64 `json:"rpm"`             // engine rotations per minute
 	CoolantTempC  float64 `json:"coolant_temp_c"`  // temperature in °C
 	EngineLoadPct float64 `json:"engine_load_pct"` // percentage of engine capacity currently being used
 }
 
-func NewEngineTelemetryEvent() *EngineTelemetryEvent {
-	return &EngineTelemetryEvent{
+func NewVehicleEngineTelemetryEvent() *VehicleEngineTelemetryEvent {
+	return &VehicleEngineTelemetryEvent{
 		EventMetaData: NewEventMetaData(),
 		RPM:           0,
 		CoolantTempC:  0,
@@ -40,17 +40,17 @@ func NewEngineTelemetryEvent() *EngineTelemetryEvent {
 	}
 }
 
-func (ete *EngineTelemetryEvent) SetRPM(RPM float64) *EngineTelemetryEvent {
+func (ete *VehicleEngineTelemetryEvent) SetRPM(RPM float64) *VehicleEngineTelemetryEvent {
 	ete.RPM = RPM
 	return ete
 }
 
-func (ete *EngineTelemetryEvent) SetCoolantTempC(CoolantTempC float64) *EngineTelemetryEvent {
+func (ete *VehicleEngineTelemetryEvent) SetCoolantTempC(CoolantTempC float64) *VehicleEngineTelemetryEvent {
 	ete.CoolantTempC = CoolantTempC
 	return ete
 }
 
-func (ete *EngineTelemetryEvent) SetEngineLoadPct(EngineLoadPct float64) *EngineTelemetryEvent {
+func (ete *VehicleEngineTelemetryEvent) SetEngineLoadPct(EngineLoadPct float64) *VehicleEngineTelemetryEvent {
 	ete.EngineLoadPct = EngineLoadPct
 	return ete
 }

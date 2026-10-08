@@ -29,11 +29,11 @@ import "time"
 type EventType string
 
 const (
-	VehicleGPSEvent             EventType = "vehicle.location"
-	VehicleEngineTelemetryEvent EventType = "vehicle.engine_telemetry"
-	VehicleDiagnosticEvent      EventType = "vehicle.diagnostic"
-	VehicleFuelEvent            EventType = "vehicle.fuel"
-	VehicleBatteryEvent         EventType = "vehicle.battery"
+	VehicleGPSEventType             EventType = "vehicle.location"
+	VehicleEngineTelemetryEventType EventType = "vehicle.engine_telemetry"
+	VehicleDiagnosticEventType      EventType = "vehicle.diagnostic"
+	VehicleFuelEventType            EventType = "vehicle.fuel"
+	VehicleBatteryEventType         EventType = "vehicle.battery"
 )
 
 type EventMetaData struct {

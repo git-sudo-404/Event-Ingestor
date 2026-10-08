@@ -24,7 +24,7 @@
 
 package events
 
-type GPSEvent struct {
+type VehicleGPSEvent struct {
 	EventMetaData
 	Latitude     float64  `json:"latitude"`
 	Longitude    float64  `json:"longitude"`
@@ -35,8 +35,8 @@ type GPSEvent struct {
 	OdometerKM   *float64 `json:"odometer_km,omitempty"`    // total distance travelled in km
 }
 
-func NewGPSEvent() *GPSEvent {
-	return &GPSEvent{
+func NewVehicleGPSEvent() *VehicleGPSEvent {
+	return &VehicleGPSEvent{
 		EventMetaData: NewEventMetaData(),
 		Latitude:      0,
 		Longitude:     0,
@@ -45,37 +45,37 @@ func NewGPSEvent() *GPSEvent {
 	}
 }
 
-func (gps *GPSEvent) SetLatitude(Latitude float64) *GPSEvent {
+func (gps *VehicleGPSEvent) SetLatitude(Latitude float64) *VehicleGPSEvent {
 	gps.Latitude = Latitude
 	return gps
 }
 
-func (gps *GPSEvent) SetLongitude(Longitude float64) *GPSEvent {
+func (gps *VehicleGPSEvent) SetLongitude(Longitude float64) *VehicleGPSEvent {
 	gps.Longitude = Longitude
 	return gps
 }
 
-func (gps *GPSEvent) SetAltitudeM(AltitudeM float64) *GPSEvent {
+func (gps *VehicleGPSEvent) SetAltitudeM(AltitudeM float64) *VehicleGPSEvent {
 	gps.AltitudeM = &AltitudeM
 	return gps
 }
 
-func (gps *GPSEvent) SetSpeedKMH(SpeedKMH float64) *GPSEvent {
+func (gps *VehicleGPSEvent) SetSpeedKMH(SpeedKMH float64) *VehicleGPSEvent {
 	gps.SpeedKMH = SpeedKMH
 	return gps
 }
 
-func (gps *GPSEvent) SetHeadingDir(HeadingDir float64) *GPSEvent {
+func (gps *VehicleGPSEvent) SetHeadingDir(HeadingDir float64) *VehicleGPSEvent {
 	gps.HeadingDir = HeadingDir
 	return gps
 }
 
-func (gps *GPSEvent) SetGPSAccuracyM(GPSAccuracyM float64) *GPSEvent {
+func (gps *VehicleGPSEvent) SetGPSAccuracyM(GPSAccuracyM float64) *VehicleGPSEvent {
 	gps.GPSAccuracyM = &GPSAccuracyM
 	return gps
 }
 
-func (gps *GPSEvent) SetOdometerKM(OdometerKM float64) *GPSEvent {
+func (gps *VehicleGPSEvent) SetOdometerKM(OdometerKM float64) *VehicleGPSEvent {
 	gps.OdometerKM = &OdometerKM
 	return gps
 }

@@ -24,7 +24,7 @@
 
 package events
 
-type BatteryEvent struct {
+type VehicleBatteryEvent struct {
 	EventMetaData
 	VoltageV         float64  `json:"voltage_v"`                     // battery voltage
 	CurrentA         *float64 `json:"current_a,omitempty"`           // current flowing through the battery in amps
@@ -32,26 +32,26 @@ type BatteryEvent struct {
 	StateOfChargePct *float64 `json:"state_of_charge_pct,omitempty"` // estimated battery charge remaining as a percentage
 }
 
-func NewBatteryEvent() *BatteryEvent {
-	return &BatteryEvent{
+func NewVehicleBatteryEvent() *VehicleBatteryEvent {
+	return &VehicleBatteryEvent{
 		EventMetaData: NewEventMetaData(),
 		VoltageV:      0,
 	}
 }
 
-func (be *BatteryEvent) SetVolateV(VoltageV float64) *BatteryEvent {
+func (be *VehicleBatteryEvent) SetVolateV(VoltageV float64) *VehicleBatteryEvent {
 	be.VoltageV = VoltageV
 	return be
 }
-func (be *BatteryEvent) SetCurrentA(CurrentA float64) *BatteryEvent {
+func (be *VehicleBatteryEvent) SetCurrentA(CurrentA float64) *VehicleBatteryEvent {
 	be.CurrentA = &CurrentA
 	return be
 }
-func (be *BatteryEvent) SetTemperatureC(TemperatureC float64) *BatteryEvent {
+func (be *VehicleBatteryEvent) SetTemperatureC(TemperatureC float64) *VehicleBatteryEvent {
 	be.TemperatureC = &TemperatureC
 	return be
 }
-func (be *BatteryEvent) SetStateOfChargePct(StateOfChargePct float64) *BatteryEvent {
+func (be *VehicleBatteryEvent) SetStateOfChargePct(StateOfChargePct float64) *VehicleBatteryEvent {
 	be.StateOfChargePct = &StateOfChargePct
 	return be
 }

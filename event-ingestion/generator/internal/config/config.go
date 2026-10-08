@@ -25,7 +25,10 @@
 package config
 
 type Config struct {
-	
+	vehicleGPSEventTick        int
+	vehicleFuelEventTick       int
+	vehicleBatteryEventTick    int
+	vehicleDiagnosticEventTick int
+
+	vehicleCount int
 }
-
-

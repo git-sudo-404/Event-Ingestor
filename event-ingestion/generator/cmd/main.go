@@ -21,3 +21,14 @@
 // SOFTWARE.
 
 package main
+
+import (
+	generator "generator/internal/generators"
+	"os"
+)
+
+func main() {
+	args := os.Args
+	configFilePath := args[1]
+	generator.StartGeneratingVehicleEvents(configFilePath)
+}

@@ -24,11 +24,29 @@
 
 package config
 
-type Config struct {
-	vehicleGPSEventTick        int
-	vehicleFuelEventTick       int
-	vehicleBatteryEventTick    int
-	vehicleDiagnosticEventTick int
+import (
+	"fmt"
+	"os"
 
-	vehicleCount int
+	"gopkg.in/yaml.v3"
+)
+
+type Config struct {
+	VehicleCount      int    `yaml:"vehicle_count"`
+	EventIngestionURL string `yaml:"event_ingestion_url"`
+}
+
+func ParseConfig(filePath string) (*Config, error) {
+
+	data, err := os.ReadFile(filePath)
+	if err != nil {
+		fmt.Println("[ERROR] An Error occured during reading the config.yaml")
+	}
+
+	var cfg Config
+	if err := yaml.Unmarshal(data, &cfg); err != nil {
+		return &Config{}, err
+	}
+
+	return &cfg, nil
 }

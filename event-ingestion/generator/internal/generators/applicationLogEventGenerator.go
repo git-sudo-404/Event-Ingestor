@@ -22,4 +22,4 @@
  * SOFTWARE.
  */
 
-package config
+package generator

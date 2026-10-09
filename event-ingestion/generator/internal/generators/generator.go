@@ -25,8 +25,28 @@
 package generator
 
 import (
+	"context"
+	"fmt"
 	"generator/internal/config"
+	"sync"
+	"time"
 )
 
 var cfg config.Config
-var EventsChan chan []byte
+
+func StartGeneratingVehicleEvents(configFilePath string) {
+	parsedCfg, err := config.ParseConfig(configFilePath)
+	if err != nil {
+		fmt.Println("[ERROR] Error occured while parsing the config file", err)
+	}
+	cfg = *parsedCfg
+	var vehicleEventsWG sync.WaitGroup
+	for i := 0; i < cfg.VehicleCount; i++ {
+		vehicle := CreateNewVehicle(i + 1)
+		ctx, cancel := context.WithCancel(context.Background())
+		defer cancel()
+		vehicleEventsWG.Add(1)
+		go vehicle.startGeneratingEvents(ctx, &vehicleEventsWG, time.Second)
+	}
+	vehicleEventsWG.Wait()
+}

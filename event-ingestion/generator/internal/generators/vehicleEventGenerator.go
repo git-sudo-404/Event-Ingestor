@@ -25,15 +25,34 @@
 package generator
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
 	"generator/internal/events"
+	"math/rand"
 	"strconv"
+	"sync"
 	"time"
 )
 
-func (v *vehicleState) generateVehicleGPSEvent() []byte {
+func (v *vehicleState) makeVehicleEventRequest(eventJSON []byte) {
+	resp, err := v.client.Post(
+		cfg.EventIngestionURL+"/vehicle/"+strconv.Itoa(int(v.EventNumber))+"/events",
+		"application/json",
+		bytes.NewReader(eventJSON),
+	)
+	if err != nil {
+		fmt.Println("[ERROR] Error Occured while sending http event from vehicle")
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != 200 {
+		fmt.Println("ingestion returned %s", resp.Status)
+	}
+	fmt.Println("[LOG] Sending : ", string(eventJSON))
+}
+
+func (v *vehicleState) generateVehicleGPSEvent() {
 	v.mu.Lock()
 	defer v.mu.Unlock()
 	v.EventNumber += 1
@@ -56,19 +75,19 @@ func (v *vehicleState) generateVehicleGPSEvent() []byte {
 	GPSEventJSON, err := json.Marshal(GPSEvent)
 	if err != nil {
 		fmt.Println("[ERROR] Error while Marshaling Vehicle GPSEvent to JSON", err)
-		return []byte{}
+		return
 	}
-	return GPSEventJSON
+	v.makeVehicleEventRequest(GPSEventJSON)
 }
 
-func (v *vehicleState) generateVehicleFuelEvent() []byte {
+func (v *vehicleState) generateVehicleFuelEvent() {
 	v.mu.Lock()
 	defer v.mu.Unlock()
 	v.EventNumber += 1
 	FuelEvent := events.NewVehicleFuelEvent()
 	FuelEvent.
 		SetEventID("vehicle.event." + strconv.Itoa(int(v.EventNumber))).
-		SetEventType(string(events.VehicleGPSEventType)).
+		SetEventType(string(events.VehicleFuelEventType)).
 		SetSchemaVersion(int(v.SchemaVersion)).
 		SetSource("vehicle-simulator").
 		SetTimeStamp(time.Now()).
@@ -80,19 +99,19 @@ func (v *vehicleState) generateVehicleFuelEvent() []byte {
 	FuelEventJSON, err := json.Marshal(FuelEvent)
 	if err != nil {
 		fmt.Println("[ERROR] Error marshaling Vehicle Fuel Event to JSON", err)
-		return []byte{}
+		return
 	}
-	return FuelEventJSON
+	v.makeVehicleEventRequest(FuelEventJSON)
 }
 
-func (v *vehicleState) generateVehicleBatteryEvent() []byte {
+func (v *vehicleState) generateVehicleBatteryEvent() {
 	v.mu.Lock()
 	defer v.mu.Unlock()
 	v.EventNumber += 1
 	BatteryEvent := events.NewVehicleBatteryEvent()
 	BatteryEvent.
 		SetEventID("vehicle.event." + strconv.Itoa(int(v.EventNumber))).
-		SetEventType(string(events.VehicleGPSEventType)).
+		SetEventType(string(events.VehicleBatteryEventType)).
 		SetSchemaVersion(int(v.SchemaVersion)).
 		SetSource("vehicle-simulator").
 		SetTimeStamp(time.Now()).
@@ -105,19 +124,19 @@ func (v *vehicleState) generateVehicleBatteryEvent() []byte {
 	BatteryEventJSON, err := json.Marshal(BatteryEvent)
 	if err != nil {
 		fmt.Println("[ERROR] Error marshaling Vehicle Battery Event to JSON", err)
-		return []byte{}
+		return
 	}
-	return BatteryEventJSON
+	v.makeVehicleEventRequest(BatteryEventJSON)
 }
 
-func (v *vehicleState) generateVehicleEngineTelemetryEvent() []byte {
+func (v *vehicleState) generateVehicleEngineTelemetryEvent() {
 	v.mu.Lock()
 	defer v.mu.Unlock()
 	v.EventNumber += 1
 	EngineTelemetryEvent := events.NewVehicleEngineTelemetryEvent()
 	EngineTelemetryEvent.
 		SetEventID("vehicle.event." + strconv.Itoa(int(v.EventNumber))).
-		SetEventType(string(events.VehicleGPSEventType)).
+		SetEventType(string(events.VehicleEngineTelemetryEventType)).
 		SetSchemaVersion(int(v.SchemaVersion)).
 		SetSource("vehicle-simulator").
 		SetTimeStamp(time.Now()).
@@ -129,19 +148,19 @@ func (v *vehicleState) generateVehicleEngineTelemetryEvent() []byte {
 	EngineTelemetryEventJSON, err := json.Marshal(EngineTelemetryEvent)
 	if err != nil {
 		fmt.Println("[ERROR] Error marshaling Vehicle Engine Telemetry Event to JSON", err)
-		return []byte{}
+		return
 	}
-	return EngineTelemetryEventJSON
+	v.makeVehicleEventRequest(EngineTelemetryEventJSON)
 }
 
-func (v *vehicleState) generateVehicleDiagnosticEvent(code string, severity string, description string) []byte {
+func (v *vehicleState) generateVehicleDiagnosticEvent(code string, severity string, description string) {
 	v.mu.Lock()
 	defer v.mu.Unlock()
 	v.EventNumber += 1
 	DiagnosticEvent := events.NewVehicleDiagnosticEvent()
 	DiagnosticEvent.
 		SetEventID("vehicle.event." + strconv.Itoa(int(v.EventNumber))).
-		SetEventType(string(events.VehicleGPSEventType)).
+		SetEventType(string(events.VehicleDiagnosticEventType)).
 		SetSchemaVersion(int(v.SchemaVersion)).
 		SetSource("vehicle-simulator").
 		SetTimeStamp(time.Now()).
@@ -153,20 +172,29 @@ func (v *vehicleState) generateVehicleDiagnosticEvent(code string, severity stri
 	DiagnosticEventJSON, err := json.Marshal(DiagnosticEvent)
 	if err != nil {
 		fmt.Println("[ERROR] Error marshaling Vehicle Diagnostic Event to JSON", err)
-		return []byte{}
+		return
 	}
-	return DiagnosticEventJSON
+	v.makeVehicleEventRequest(DiagnosticEventJSON)
 }
 
-func (v *vehicleState) startGeneratingEvents(ctx context.Context, interval time.Duration) {
+func (v *vehicleState) startGeneratingEvents(ctx context.Context, vehicleEventsWG *sync.WaitGroup, interval time.Duration) {
 	if interval <= 0 {
 		return
 	}
 
-	ticker := time.NewTicker(interval)
-	defer ticker.Stop()
-	lastUpdate := time.Now()
+	randomWaitTime := rand.Float64() * 10
+	time.Sleep(time.Duration(randomWaitTime * float64(time.Second)))
 
+	ticker := time.NewTicker(interval)
+	vehicleBatteryEventTicker := time.NewTicker(time.Second * 10)
+	vehicleEngineTelemetryEventTicker := time.NewTicker(time.Second * 5)
+	defer func() {
+		ticker.Stop()
+		vehicleEventsWG.Done()
+		vehicleBatteryEventTicker.Stop()
+		vehicleEngineTelemetryEventTicker.Stop()
+	}()
+	lastUpdate := time.Now()
 	for {
 		select {
 		case <-ctx.Done():
@@ -183,26 +211,24 @@ func (v *vehicleState) startGeneratingEvents(ctx context.Context, interval time.
 			v.updateFuelStates(elapsed, distanceKM)
 			v.updateBatteryStates(elapsed)
 			v.mu.Unlock()
+			v.generateVehicleGPSEvent()
+		case <-vehicleBatteryEventTicker.C:
+			v.generateVehicleBatteryEvent()
+			v.generateVehicleFuelEvent()
+		case <-vehicleEngineTelemetryEventTicker.C:
+			v.generateVehicleEngineTelemetryEvent()
 		}
 		if v.SpeedKMH >= 60 {
-			EventsChan <- v.generateVehicleDiagnosticEvent("high.speed", string(events.SeverityWarning), "Vehicle crossing speed limit")
+			v.generateVehicleDiagnosticEvent("high.speed", string(events.SeverityWarning), "Vehicle crossing speed limit")
 		}
 		if v.FuelLevelPct <= 10 {
-			EventsChan <- v.generateVehicleDiagnosticEvent("low.fuel", string(events.SeverityCritical), "Fuel is low "+strconv.Itoa(int(v.FuelLevelPct))+"%")
+			v.generateVehicleDiagnosticEvent("low.fuel", string(events.SeverityCritical), "Fuel is low "+strconv.Itoa(int(v.FuelLevelPct))+"%")
 		}
 		if v.StateOfChargePct <= 10 {
-			EventsChan <- v.generateVehicleDiagnosticEvent("low.battery", string(events.SeverityCritical), "Battery is low "+strconv.Itoa(int(v.FuelLevelPct))+"%")
+			v.generateVehicleDiagnosticEvent("low.battery", string(events.SeverityCritical), "Battery is low "+strconv.Itoa(int(v.FuelLevelPct))+"%")
 		}
 		if v.CoolantTempC >= 40 {
-			EventsChan <- v.generateVehicleDiagnosticEvent("high.coolant.temp", string(events.SeverityInfo), "Coolant Temperature is high "+strconv.Itoa(int(v.CoolantTempC))+"C")
-		}
-		EventsChan <- v.generateVehicleGPSEvent()
-		if int(v.EventNumber)%10 == 0 {
-			EventsChan <- v.generateVehicleBatteryEvent()
-			EventsChan <- v.generateVehicleFuelEvent()
-		}
-		if int(v.EventNumber)%5 == 0 {
-			EventsChan <- v.generateVehicleEngineTelemetryEvent()
+			v.generateVehicleDiagnosticEvent("high.coolant.temp", string(events.SeverityInfo), "Coolant Temperature is high "+strconv.Itoa(int(v.CoolantTempC))+"C")
 		}
 	}
 }

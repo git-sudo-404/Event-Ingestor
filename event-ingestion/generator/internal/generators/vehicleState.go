@@ -27,6 +27,7 @@ package generator
 import (
 	"math"
 	"math/rand"
+	"net/http"
 	"strconv"
 	"sync"
 	"time"
@@ -74,6 +75,7 @@ type vehicleState struct {
 	EventNumber   float64
 	SchemaVersion float64
 	mu            sync.Mutex
+	client        http.Client
 }
 
 func CreateNewVehicle(vehicleNumber int) *vehicleState {
@@ -125,6 +127,7 @@ func CreateNewVehicle(vehicleNumber int) *vehicleState {
 		StateOfChargePct:   StateOfChargePct,
 		EventNumber:        EventNumber,
 		SchemaVersion:      float64(1),
+		client:             http.Client{},
 	}
 }
 

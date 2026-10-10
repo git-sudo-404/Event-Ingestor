@@ -1,4 +1,4 @@
-package com.gitsudo404.eventingestor;
+package com.thepurplecompany.eventingestor;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 

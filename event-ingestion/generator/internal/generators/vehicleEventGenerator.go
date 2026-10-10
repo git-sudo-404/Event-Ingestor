@@ -38,7 +38,7 @@ import (
 
 func (v *vehicleState) makeVehicleEventRequest(eventJSON []byte) {
 	resp, err := v.client.Post(
-		cfg.EventIngestionURL+"/vehicle/"+strconv.Itoa(int(v.EventNumber))+"/events",
+		cfg.EventIngestionURL+"/events/vehicle/"+strconv.Itoa(int(v.EventNumber)),
 		"application/json",
 		bytes.NewReader(eventJSON),
 	)

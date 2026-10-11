@@ -1,3 +1,3 @@
 # Event-Ingestor
 
-High Throughput event Ingestio
+High Throughput event Ingestion

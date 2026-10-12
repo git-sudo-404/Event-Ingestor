@@ -25,13 +25,13 @@
 package com.gitsudo404.event_ingestion.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 public class VehicleBatteryEventRequest extends EventMetaData {
 
   @JsonProperty("voltage_v")
-  @NotBlank
-  private Float volatageV;
+  @NotNull
+  private Float voltageV;
 
   @JsonProperty("current_a")
   private Float currentA;
@@ -41,4 +41,36 @@ public class VehicleBatteryEventRequest extends EventMetaData {
 
   @JsonProperty("state_of_charge_pct")
   private Float stateOfChargePct;
+
+  public Float getVoltageV() {
+    return volatageV;
+  }
+
+  public void setVoltageV(Float volatageV) {
+    this.volatageV = volatageV;
+  }
+
+  public Float getCurrentA() {
+    return currentA;
+  }
+
+  public void setCurrentA(Float currentA) {
+    this.currentA = currentA;
+  }
+
+  public Float getTemperatureC() {
+    return temperatureC;
+  }
+
+  public void setTemperatureC(Float temperatureC) {
+    this.temperatureC = temperatureC;
+  }
+
+  public Float getStateOfChargePct() {
+    return stateOfChargePct;
+  }
+
+  public void setStateOfChargePct(Float stateOfChargePct) {
+    this.stateOfChargePct = stateOfChargePct;
+  }
 }

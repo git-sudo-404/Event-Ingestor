@@ -40,7 +40,7 @@ public class EventMetaData {
   private String eventType;
 
   @JsonProperty("schema_version")
-  @NotBlank
+  @NotNull
   private Integer schemaVersion;
 
   @JsonProperty("source")
@@ -54,4 +54,22 @@ public class EventMetaData {
   @JsonProperty("entity_id")
   @NotBlank
   private String entityId;
+
+  public String getEventId() { return eventId; }
+  public void setEventId(String eventId) { this.eventId = eventId; }
+
+  public String getEventType() { return eventType; }
+  public void setEventType(String eventType) { this.eventType = eventType; }
+
+  public Integer getSchemaVersion() { return schemaVersion; }
+  public void setSchemaVersion(Integer schemaVersion) { this.schemaVersion = schemaVersion; }
+
+  public String getSource() { return source; }
+  public void setSource(String source) { this.source = source; }
+
+  public Instant getTimestamp() { return timestamp; }
+  public void setTimestamp(Instant timestamp) { this.timestamp = timestamp; }
+
+  public String getEntityId() { return entityId; }
+  public void setEntityId(String entityId) { this.entityId = entityId; }
 }

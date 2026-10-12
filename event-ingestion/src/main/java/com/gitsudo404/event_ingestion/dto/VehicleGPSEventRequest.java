@@ -25,27 +25,27 @@
 package com.gitsudo404.event_ingestion.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 public class VehicleGPSEventRequest extends EventMetaData {
 
   @JsonProperty("latitude")
-  @NotBlank
+  @NotNull
   private Float latitude;
 
   @JsonProperty("longitude")
-  @NotBlank
+  @NotNull
   private Float longitude;
 
   @JsonProperty("altitude_m")
   private Float altitudeM;
 
   @JsonProperty("speed_kmh")
-  @NotBlank
+  @NotNull
   private Float speedKMH;
 
   @JsonProperty("heading_dir")
-  @NotBlank
+  @NotNull
   private Float headingDir;
 
   @JsonProperty("gps_accuracy_m")
@@ -53,4 +53,60 @@ public class VehicleGPSEventRequest extends EventMetaData {
 
   @JsonProperty("odometer_km")
   private Float odometerKM;
+
+  public Float getLatitude() {
+    return latitude;
+  }
+
+  public void setLatitude(Float latitude) {
+    this.latitude = latitude;
+  }
+
+  public Float getLongitude() {
+    return longitude;
+  }
+
+  public void setLongitude(Float longitude) {
+    this.longitude = longitude;
+  }
+
+  public Float getAltitudeM() {
+    return altitudeM;
+  }
+
+  public void setAltitudeM(Float altitudeM) {
+    this.altitudeM = altitudeM;
+  }
+
+  public Float getSpeedKMH() {
+    return speedKMH;
+  }
+
+  public void setSpeedKMH(Float speedKMH) {
+    this.speedKMH = speedKMH;
+  }
+
+  public Float getHeadingDir() {
+    return headingDir;
+  }
+
+  public void setHeadingDir(Float headingDir) {
+    this.headingDir = headingDir;
+  }
+
+  public Float getGpsAccuracyM() {
+    return gpsAccuracyM;
+  }
+
+  public void setGpsAccuracyM(Float gpsAccuracyM) {
+    this.gpsAccuracyM = gpsAccuracyM;
+  }
+
+  public Float getOdometerKM() {
+    return odometerKM;
+  }
+
+  public void setOdometerKM(Float odometerKM) {
+    this.odometerKM = odometerKM;
+  }
 }

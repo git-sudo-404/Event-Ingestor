@@ -40,4 +40,13 @@ public class VehicleDiagnosticEventRequest extends EventMetaData {
   @JsonProperty("description")
   @NotBlank
   private String description;
+
+  public String getCode() { return code; }
+  public void setCode(String code) { this.code = code; }
+
+  public String getSeverity() { return severity; }
+  public void setSeverity(String severity) { this.severity = severity; }
+
+  public String getDescription() { return description; }
+  public void setDescription(String description) { this.description = description; }
 }

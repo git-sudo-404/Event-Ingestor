@@ -40,4 +40,28 @@ public class VehicleEngineTelemetryEventRequest extends EventMetaData {
   @JsonProperty("engine_load_pct")
   @NotBlank
   private String engineLoadPct;
+
+  public Float getRpm() {
+    return rpm;
+  }
+
+  public void setRpm(Float rpm) {
+    this.rpm = rpm;
+  }
+
+  public String getCoolantTempC() {
+    return coolantTempC;
+  }
+
+  public void setCoolantTempC(String coolantTempC) {
+    this.coolantTempC = coolantTempC;
+  }
+
+  public String getEngineLoadPct() {
+    return engineLoadPct;
+  }
+
+  public void setEngineLoadPct(String engineLoadPct) {
+    this.engineLoadPct = engineLoadPct;
+  }
 }

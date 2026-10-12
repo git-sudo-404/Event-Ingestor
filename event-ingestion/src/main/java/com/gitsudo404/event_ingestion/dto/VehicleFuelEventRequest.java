@@ -25,12 +25,12 @@
 package com.gitsudo404.event_ingestion.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 public class VehicleFuelEventRequest extends EventMetaData {
 
   @JsonProperty("fuel_level_pct")
-  @NotBlank
+  @NotNull
   private Float fuelLevelPct;
 
   @JsonProperty("fuel_rate_lph")
@@ -38,4 +38,28 @@ public class VehicleFuelEventRequest extends EventMetaData {
 
   @JsonProperty("fuel_consumed_total_l")
   private Float fuelConsumedTotalL;
+
+  public Float getFuelLevelPct() {
+    return fuelLevelPct;
+  }
+
+  public void setFuelLevelPct(Float fuelLevelPct) {
+    this.fuelLevelPct = fuelLevelPct;
+  }
+
+  public Float getFuelRateLPH() {
+    return fuelRateLPH;
+  }
+
+  public void setFuelRateLPH(Float fuelRateLPH) {
+    this.fuelRateLPH = fuelRateLPH;
+  }
+
+  public Float getFuelConsumedTotalL() {
+    return fuelConsumedTotalL;
+  }
+
+  public void setFuelConsumedTotalL(Float fuelConsumedTotalL) {
+    this.fuelConsumedTotalL = fuelConsumedTotalL;
+  }
 }

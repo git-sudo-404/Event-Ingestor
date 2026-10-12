@@ -43,11 +43,11 @@ public class VehicleBatteryEventRequest extends EventMetaData {
   private Float stateOfChargePct;
 
   public Float getVoltageV() {
-    return volatageV;
+    return voltageV;
   }
 
-  public void setVoltageV(Float volatageV) {
-    this.volatageV = volatageV;
+  public void setVoltageV(Float voltageV) {
+    this.voltageV = voltageV;
   }
 
   public Float getCurrentA() {

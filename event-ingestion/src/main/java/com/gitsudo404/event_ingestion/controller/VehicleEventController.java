@@ -25,3 +25,4 @@
 package com.gitsudo404.event_ingestion.controller;
 
 public class VehicleEventController {
+}

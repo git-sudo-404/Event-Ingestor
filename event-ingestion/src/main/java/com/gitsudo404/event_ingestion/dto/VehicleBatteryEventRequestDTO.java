@@ -25,43 +25,52 @@
 package com.gitsudo404.event_ingestion.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
-public class VehicleEngineTelemetryEventRequest extends EventMetaData {
+public class VehicleBatteryEventRequestDTO extends EventMetaData {
 
-  @JsonProperty("rpm")
-  @NotBlank
-  private Float rpm;
+  @JsonProperty("voltage_v")
+  @NotNull
+  private Float voltageV;
 
-  @JsonProperty("coolant_temp_c")
-  @NotBlank
-  private String coolantTempC;
+  @JsonProperty("current_a")
+  private Float currentA;
 
-  @JsonProperty("engine_load_pct")
-  @NotBlank
-  private String engineLoadPct;
+  @JsonProperty("temperature_c")
+  private Float temperatureC;
 
-  public Float getRpm() {
-    return rpm;
+  @JsonProperty("state_of_charge_pct")
+  private Float stateOfChargePct;
+
+  public Float getVoltageV() {
+    return voltageV;
   }
 
-  public void setRpm(Float rpm) {
-    this.rpm = rpm;
+  public void setVoltageV(Float voltageV) {
+    this.voltageV = voltageV;
   }
 
-  public String getCoolantTempC() {
-    return coolantTempC;
+  public Float getCurrentA() {
+    return currentA;
   }
 
-  public void setCoolantTempC(String coolantTempC) {
-    this.coolantTempC = coolantTempC;
+  public void setCurrentA(Float currentA) {
+    this.currentA = currentA;
   }
 
-  public String getEngineLoadPct() {
-    return engineLoadPct;
+  public Float getTemperatureC() {
+    return temperatureC;
   }
 
-  public void setEngineLoadPct(String engineLoadPct) {
-    this.engineLoadPct = engineLoadPct;
+  public void setTemperatureC(Float temperatureC) {
+    this.temperatureC = temperatureC;
+  }
+
+  public Float getStateOfChargePct() {
+    return stateOfChargePct;
+  }
+
+  public void setStateOfChargePct(Float stateOfChargePct) {
+    this.stateOfChargePct = stateOfChargePct;
   }
 }

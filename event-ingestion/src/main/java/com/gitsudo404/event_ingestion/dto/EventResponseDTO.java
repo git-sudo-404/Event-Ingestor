@@ -25,28 +25,12 @@
 package com.gitsudo404.event_ingestion.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.validation.constraints.NotBlank;
 
-public class VehicleDiagnosticEventRequest extends EventMetaData {
+public class EventResponseDTO {
 
-  @JsonProperty("code")
-  @NotBlank
-  private String code;
+  @JsonProperty("event_id") public String event_id;
 
-  @JsonProperty("severity")
-  @NotBlank
-  private String severity;
+  @JsonProperty("status") public String status;
 
-  @JsonProperty("description")
-  @NotBlank
-  private String description;
-
-  public String getCode() { return code; }
-  public void setCode(String code) { this.code = code; }
-
-  public String getSeverity() { return severity; }
-  public void setSeverity(String severity) { this.severity = severity; }
-
-  public String getDescription() { return description; }
-  public void setDescription(String description) { this.description = description; }
+  @JsonProperty("message") public String message;
 }

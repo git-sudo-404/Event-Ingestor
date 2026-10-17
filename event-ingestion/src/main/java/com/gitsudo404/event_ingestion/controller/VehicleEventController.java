@@ -24,4 +24,20 @@
 
 package com.gitsudo404.event_ingestion.controller;
 
-public class VehicleEventController {}
+import com.gitsudo404.event_ingestion.dto.EventResponseDTO;
+import com.gitsudo404.event_ingestion.dto.VehicleGPSEventRequestDTO;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+@RequestMapping("/api/v1/events/vehicle")
+public class VehicleEventController {
+
+  @PostMapping("/gps")
+  public EventResponseDTO
+  ingestGPSEvent(@RequestBody VehicleGPSEventRequestDTO request) {
+    String vehicleId = request.getEntityId();
+  }
+}

@@ -1,1 +1,2 @@
 - V1 implements only a version of kafka where there's only a single node , after vq implementation adjust the code and the logics to support multiple nodes as well
+- ##### Add some Ifrastrcutre management support like terraform or smtng to create the kafka topics during startup and the partitions and other configurations anol 

@@ -22,17 +22,29 @@
  * SOFTWARE.
  */
 
-package com.gitsudo404.event_ingestion.producer;
+package com.gitsudo404.event_ingestion.service;
 
-import org.springframework.kafka.core.KafkaTemplate;
+import com.gitsudo404.event_ingestion.dto.EventResponseDTO;
+import com.gitsudo404.event_ingestion.dto.VehicleGPSEventRequestDTO;
+import com.gitsudo404.event_ingestion.producer.EventPublisher;
 import org.springframework.stereotype.Service;
+import tools.jackson.databind.ObjectMapper;
 
 @Service
-public class VehicleGPSEventProducer {
+public class VehicleEventService {
 
-  private final KafkaTemplate<String, String> kafkaTemplate;
+  private final EventPublisher eventPublisher;
+  private final ObjectMapper objectMapper;
 
-  public VehicleGPSEventProducer(KafkaTemplate<String, String> kafkaTemplate) {
-    this.kafkaTemplate = kafkaTemplate;
+  public VehicleEventService(EventPublisher eventPublisher, ObjectMapper objectMapper) {
+    this.eventPublisher = eventPublisher;
+    this.objectMapper = objectMapper;
+  }
+
+  public EventResponseDTO ingest(VehicleGPSEventRequestDTO request) {
+    String requestString = objectMapper.writeValueAsString(request);
+    eventPublisher.publish(requestString);
+    return new EventResponseDTO()
+        .SetMessage("DUMMMY MEssage").SetStatus("success").SetEventId(request.getEventId());
   }
 }

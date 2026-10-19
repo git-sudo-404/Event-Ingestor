@@ -28,9 +28,39 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class EventResponseDTO {
 
-  @JsonProperty("event_id") public String event_id;
+  @JsonProperty("event_id")
+  public String eventId;
 
-  @JsonProperty("status") public String status;
+  @JsonProperty("status")
+  public String status;
 
-  @JsonProperty("message") public String message;
+  @JsonProperty("message")
+  public String message;
+
+  public EventResponseDTO SetEventId(String eventId) {
+    this.eventId = eventId;
+    return this;
+  }
+
+  public EventResponseDTO SetStatus(String status) {
+    this.status = status;
+    return this;
+  }
+
+  public EventResponseDTO SetMessage(String message) {
+    this.message = message;
+    return this;
+  }
+
+  public String GetEventId() {
+    return this.eventId;
+  }
+
+  public String GetStatus() {
+    return this.status;
+  }
+
+  public String GetMessage() {
+    return this.message;
+  }
 }

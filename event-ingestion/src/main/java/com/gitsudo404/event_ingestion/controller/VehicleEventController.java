@@ -26,6 +26,8 @@ package com.gitsudo404.event_ingestion.controller;
 
 import com.gitsudo404.event_ingestion.dto.EventResponseDTO;
 import com.gitsudo404.event_ingestion.dto.VehicleGPSEventRequestDTO;
+import com.gitsudo404.event_ingestion.service.VehicleEventService;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -35,9 +37,24 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1/events/vehicle")
 public class VehicleEventController {
 
+  private final VehicleEventService vehicleEventService;
+
+  public VehicleEventController(VehicleEventService vehicleEventService) {
+    this.vehicleEventService = vehicleEventService;
+  }
+
   @PostMapping("/gps")
-  public EventResponseDTO
-  ingestGPSEvent(@RequestBody VehicleGPSEventRequestDTO request) {
-    String vehicleId = request.getEntityId();
+  // TODO: Here any incoming request whose schema doesn't meet the validation
+  // would get a 400 and be rejected , add a failover handling here in v2
+  public EventResponseDTO handleVehicleGPSEvent(
+      @Valid @RequestBody VehicleGPSEventRequestDTO request) {
+    // check authentication
+    // check rate limit
+    // validate schema
+    System.out.println(request);
+
+    // EventResponseDTO response =
+    return vehicleEventService.ingest(request);
+    // return response;
   }
 }

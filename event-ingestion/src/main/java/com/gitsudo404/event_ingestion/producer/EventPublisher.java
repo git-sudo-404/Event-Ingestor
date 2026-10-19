@@ -22,6 +22,21 @@
  * SOFTWARE.
  */
 
-package com.gitsudo404.event_ingestion.service;
+package com.gitsudo404.event_ingestion.producer;
 
-public class VehicleService {}
+import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.stereotype.Service;
+
+@Service
+public class EventPublisher {
+
+  private final KafkaTemplate<String, String> kafkaTemplate;
+
+  public EventPublisher(KafkaTemplate<String, String> kafkaTemplate) {
+    this.kafkaTemplate = kafkaTemplate;
+  }
+
+  public void publish(String message) {
+    kafkaTemplate.send("vehicle-gps-event", message);
+  }
+}

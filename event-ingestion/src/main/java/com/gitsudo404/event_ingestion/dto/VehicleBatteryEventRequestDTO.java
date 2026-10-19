@@ -27,39 +27,50 @@ package com.gitsudo404.event_ingestion.dto;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotNull;
 
-public class VehicleFuelEventRequest extends EventMetaData {
+public class VehicleBatteryEventRequestDTO extends EventMetaData {
 
-  @JsonProperty("fuel_level_pct")
+  @JsonProperty("voltage_v")
   @NotNull
-  private Float fuelLevelPct;
+  private Float voltageV;
 
-  @JsonProperty("fuel_rate_lph")
-  private Float fuelRateLPH;
+  @JsonProperty("current_a")
+  private Float currentA;
 
-  @JsonProperty("fuel_consumed_total_l")
-  private Float fuelConsumedTotalL;
+  @JsonProperty("temperature_c")
+  private Float temperatureC;
 
-  public Float getFuelLevelPct() {
-    return fuelLevelPct;
+  @JsonProperty("state_of_charge_pct")
+  private Float stateOfChargePct;
+
+  public Float getVoltageV() {
+    return voltageV;
   }
 
-  public void setFuelLevelPct(Float fuelLevelPct) {
-    this.fuelLevelPct = fuelLevelPct;
+  public void setVoltageV(Float voltageV) {
+    this.voltageV = voltageV;
   }
 
-  public Float getFuelRateLPH() {
-    return fuelRateLPH;
+  public Float getCurrentA() {
+    return currentA;
   }
 
-  public void setFuelRateLPH(Float fuelRateLPH) {
-    this.fuelRateLPH = fuelRateLPH;
+  public void setCurrentA(Float currentA) {
+    this.currentA = currentA;
   }
 
-  public Float getFuelConsumedTotalL() {
-    return fuelConsumedTotalL;
+  public Float getTemperatureC() {
+    return temperatureC;
   }
 
-  public void setFuelConsumedTotalL(Float fuelConsumedTotalL) {
-    this.fuelConsumedTotalL = fuelConsumedTotalL;
+  public void setTemperatureC(Float temperatureC) {
+    this.temperatureC = temperatureC;
+  }
+
+  public Float getStateOfChargePct() {
+    return stateOfChargePct;
+  }
+
+  public void setStateOfChargePct(Float stateOfChargePct) {
+    this.stateOfChargePct = stateOfChargePct;
   }
 }

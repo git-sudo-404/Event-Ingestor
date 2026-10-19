@@ -27,7 +27,7 @@ package com.gitsudo404.event_ingestion.dto;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotNull;
 
-public class VehicleGPSEventRequest extends EventMetaData {
+public class VehicleGPSEventRequestDTO extends EventMetaData {
 
   @JsonProperty("latitude")
   @NotNull

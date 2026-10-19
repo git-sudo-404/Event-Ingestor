@@ -22,46 +22,21 @@
  * SOFTWARE.
  */
 
-package com.gitsudo404.event_ingestion.dto;
+package com.gitsudo404.event_ingestion.producer;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.validation.constraints.NotBlank;
+import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.stereotype.Service;
 
-public class VehicleEngineTelemetryEventRequest extends EventMetaData {
+@Service
+public class EventPublisher {
 
-  @JsonProperty("rpm")
-  @NotBlank
-  private Float rpm;
+  private final KafkaTemplate<String, String> kafkaTemplate;
 
-  @JsonProperty("coolant_temp_c")
-  @NotBlank
-  private String coolantTempC;
-
-  @JsonProperty("engine_load_pct")
-  @NotBlank
-  private String engineLoadPct;
-
-  public Float getRpm() {
-    return rpm;
+  public EventPublisher(KafkaTemplate<String, String> kafkaTemplate) {
+    this.kafkaTemplate = kafkaTemplate;
   }
 
-  public void setRpm(Float rpm) {
-    this.rpm = rpm;
-  }
-
-  public String getCoolantTempC() {
-    return coolantTempC;
-  }
-
-  public void setCoolantTempC(String coolantTempC) {
-    this.coolantTempC = coolantTempC;
-  }
-
-  public String getEngineLoadPct() {
-    return engineLoadPct;
-  }
-
-  public void setEngineLoadPct(String engineLoadPct) {
-    this.engineLoadPct = engineLoadPct;
+  public void publish(String message) {
+    kafkaTemplate.send("vehicle-gps-event", message);
   }
 }

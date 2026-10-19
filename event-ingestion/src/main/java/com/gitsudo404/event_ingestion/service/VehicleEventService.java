@@ -22,31 +22,29 @@
  * SOFTWARE.
  */
 
-package com.gitsudo404.event_ingestion.dto;
+package com.gitsudo404.event_ingestion.service;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.validation.constraints.NotBlank;
+import com.gitsudo404.event_ingestion.dto.EventResponseDTO;
+import com.gitsudo404.event_ingestion.dto.VehicleGPSEventRequestDTO;
+import com.gitsudo404.event_ingestion.producer.EventPublisher;
+import org.springframework.stereotype.Service;
+import tools.jackson.databind.ObjectMapper;
 
-public class VehicleDiagnosticEventRequest extends EventMetaData {
+@Service
+public class VehicleEventService {
 
-  @JsonProperty("code")
-  @NotBlank
-  private String code;
+  private final EventPublisher eventPublisher;
+  private final ObjectMapper objectMapper;
 
-  @JsonProperty("severity")
-  @NotBlank
-  private String severity;
+  public VehicleEventService(EventPublisher eventPublisher, ObjectMapper objectMapper) {
+    this.eventPublisher = eventPublisher;
+    this.objectMapper = objectMapper;
+  }
 
-  @JsonProperty("description")
-  @NotBlank
-  private String description;
-
-  public String getCode() { return code; }
-  public void setCode(String code) { this.code = code; }
-
-  public String getSeverity() { return severity; }
-  public void setSeverity(String severity) { this.severity = severity; }
-
-  public String getDescription() { return description; }
-  public void setDescription(String description) { this.description = description; }
+  public EventResponseDTO ingest(VehicleGPSEventRequestDTO request) {
+    String requestString = objectMapper.writeValueAsString(request);
+    eventPublisher.publish(requestString);
+    return new EventResponseDTO()
+        .SetMessage("DUMMMY MEssage").SetStatus("success").SetEventId(request.getEventId());
+  }
 }

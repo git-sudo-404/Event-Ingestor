@@ -29,7 +29,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @ConfigurationProperties(prefix = "app.rate-limiter.token-bucket.vehicle.battery-event")
-public class VehicleBatteryEventTokenBucketRateLimiterProperties implements TokenBucketRateLimiterProperties {
+public class VehicleBatteryEventTokenBucketProperties implements TokenBucketRateLimiterProperties {
 
   private Integer capacity;
   private Integer refillRate;

@@ -24,16 +24,12 @@
 
 package com.gitsudo404.event_ingestion.middleware.rate_limiter;
 
-import java.security.Timestamp;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 
 import com.gitsudo404.event_ingestion.middleware.rate_limiter.properties.TokenBucketRateLimiterProperties;
-
-import jakarta.validation.constraints.Min;
 
 /*
  * We can calculate the currenlty available tokens in a bucket without physically refilling it, using the below formulae
@@ -77,9 +73,11 @@ public class TokenBucketRateLimiter implements RateLimiter {
         0,
         currentMs - lastRefillMs) / 1000.0;
 
+    double elapsedPeriods = elapsedSeconds / properties.getRefillPeriodS();
+
     double newTokens = Math.min(
         properties.getCapacity(),
-        tokens + properties.getRefillRate() * elapsedSeconds);
+        tokens + properties.getRefillRate() * elapsedPeriods);
 
     if (newTokens >= 1.0)
       newTokens -= 1.0;

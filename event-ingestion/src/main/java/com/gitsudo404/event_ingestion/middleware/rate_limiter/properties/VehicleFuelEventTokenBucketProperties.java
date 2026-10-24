@@ -28,8 +28,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
 @Component
-@ConfigurationProperties(prefix = "app.rate-limiter.token-bucket.vehicle.diagnostic-event")
-public class VehicleDiagnosticEventTokenBucketRateLimiterProperties {
+@ConfigurationProperties(prefix = "app.rate-limiter.token-bucket.vehicle.fuel-event")
+public class VehicleFuelEventTokenBucketProperties implements TokenBucketRateLimiterProperties {
 
   private Integer capacity;
   private Integer refillRate;

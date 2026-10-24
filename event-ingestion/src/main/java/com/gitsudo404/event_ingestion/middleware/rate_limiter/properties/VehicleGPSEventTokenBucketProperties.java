@@ -28,8 +28,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
 @Component
-@ConfigurationProperties(prefix = "app.rate-limiter.token-bucket.vehicle.engine-telemetry")
-public class VehicleEngineTelemetryEventTokenBucketRateLimiterProperties {
+@ConfigurationProperties(prefix = "app.rate-limiter.token-bucket.vehicle.gps-event")
+public class VehicleGPSEventTokenBucketProperties implements TokenBucketRateLimiterProperties {
 
   private Integer capacity;
   private Integer refillRate;
@@ -58,5 +58,4 @@ public class VehicleEngineTelemetryEventTokenBucketRateLimiterProperties {
   public void setRefillPeriodS(Integer refillPeriodS) {
     this.refillPeriodS = refillPeriodS;
   }
-
 }

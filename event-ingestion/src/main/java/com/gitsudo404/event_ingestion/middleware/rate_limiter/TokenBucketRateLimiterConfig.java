@@ -28,18 +28,50 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.core.StringRedisTemplate;
 
-import com.gitsudo404.event_ingestion.middleware.rate_limiter.properties.VehicleGPSEventTokenBucketRateLimiterProperties;
+import com.gitsudo404.event_ingestion.middleware.rate_limiter.properties.VehicleBatteryEventTokenBucketProperties;
+import com.gitsudo404.event_ingestion.middleware.rate_limiter.properties.VehicleDiagnosticEventTokenBucketProperties;
+import com.gitsudo404.event_ingestion.middleware.rate_limiter.properties.VehicleEngineTelemetryEventTokenBucketProperties;
+import com.gitsudo404.event_ingestion.middleware.rate_limiter.properties.VehicleFuelEventTokenBucketProperties;
+import com.gitsudo404.event_ingestion.middleware.rate_limiter.properties.VehicleGPSEventTokenBucketProperties;
 
 @Configuration
 public class TokenBucketRateLimiterConfig {
 
   @Bean("vehicleGPSEventRateLimiter")
-  RateLimiter vehicleGPSEventRateLimiter(VehicleGPSEventTokenBucketRateLimiterProperties properties,
+  RateLimiter vehicleGPSEventRateLimiter(VehicleGPSEventTokenBucketProperties properties,
       StringRedisTemplate redis) {
     return new TokenBucketRateLimiter(
         properties,
         redis,
         "rate-limit:token-bucket:vehicle:gps");
+  }
+
+  @Bean("vehicleBatteryEventRateLimiter")
+  RateLimiter vehicleBatteryEventRateLimiter(
+      VehicleBatteryEventTokenBucketProperties properties,
+      StringRedisTemplate redis) {
+    return new TokenBucketRateLimiter(properties, redis, "rate-limit:token-bucket:vehicle:battery");
+  }
+
+  @Bean("vehicleFuelEventRateLimiter")
+  RateLimiter vehicleFuelEventRateLimiter(
+      VehicleFuelEventTokenBucketProperties properties,
+      StringRedisTemplate redis) {
+    return new TokenBucketRateLimiter(properties, redis, "rate-limit:token-bucket:vehicle:fuel");
+  }
+
+  @Bean("vehicleDiagnosticEventRateLimiter")
+  RateLimiter vehicleDiagnosticEventRateLimiter(
+      VehicleDiagnosticEventTokenBucketProperties properties,
+      StringRedisTemplate redis) {
+    return new TokenBucketRateLimiter(properties, redis, "rate-limit:token-bucket:vehicle:diagnostic");
+  }
+
+  @Bean("vehicleEngineTelemetryEventRateLimiter")
+  RateLimiter vehicleEngineTelemetryRateLimiter(
+      VehicleEngineTelemetryEventTokenBucketProperties properties,
+      StringRedisTemplate redis) {
+    return new TokenBucketRateLimiter(properties, redis, "rate-limit:token-bucket:vehicle:engine-telemetry");
   }
 
 }

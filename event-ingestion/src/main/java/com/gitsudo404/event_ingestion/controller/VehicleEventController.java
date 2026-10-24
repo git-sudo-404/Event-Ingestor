@@ -26,8 +26,11 @@ package com.gitsudo404.event_ingestion.controller;
 
 import com.gitsudo404.event_ingestion.dto.EventResponseDTO;
 import com.gitsudo404.event_ingestion.dto.VehicleGPSEventRequestDTO;
+import com.gitsudo404.event_ingestion.middleware.rate_limiter.RateLimiter;
 import com.gitsudo404.event_ingestion.service.VehicleEventService;
 import jakarta.validation.Valid;
+
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -38,9 +41,25 @@ import org.springframework.web.bind.annotation.RestController;
 public class VehicleEventController {
 
   private final VehicleEventService vehicleEventService;
+  private final RateLimiter gpsRateLimiter;
+  private final RateLimiter batteryRateLimiter;
+  private final RateLimiter fuelRateLimiter;
+  private final RateLimiter diagnosticRateLimiter;
+  private final RateLimiter engineTelemetryRateLimiter;
 
-  public VehicleEventController(VehicleEventService vehicleEventService) {
+  public VehicleEventController(
+      VehicleEventService vehicleEventService,
+      @Qualifier("vehicleGPSEventRateLimiter") RateLimiter gpsRateLimiter,
+      @Qualifier("vehicleBatteryEventRateLimiter") RateLimiter batteryRateLimiter,
+      @Qualifier("vehicleFuelEventRateLimiter") RateLimiter fuelRateLimiter,
+      @Qualifier("vehicleDiagnosticEventRateLimiter") RateLimiter diagnosticRateLimiter,
+      @Qualifier("vehicleEngineTelemetryEventRateLimiter") RateLimiter engineTelemetryRateLimiter) {
     this.vehicleEventService = vehicleEventService;
+    this.gpsRateLimiter = gpsRateLimiter;
+    this.batteryRateLimiter = batteryRateLimiter;
+    this.fuelRateLimiter = fuelRateLimiter;
+    this.diagnosticRateLimiter = diagnosticRateLimiter;
+    this.engineTelemetryRateLimiter = engineTelemetryRateLimiter;
   }
 
   @PostMapping("/gps")
@@ -48,8 +67,13 @@ public class VehicleEventController {
   // would get a 400 and be rejected , add a failover handling here in v2
   public EventResponseDTO handleVehicleGPSEvent(
       @Valid @RequestBody VehicleGPSEventRequestDTO request) {
-    // check authentication
-    // check rate limit
+    // check authentication -- will be done by mTLS using nginx
+
+    if (!gpsRateLimiter.allowRequest(request.getEntityId())) {
+      return new EventResponseDTO().SetEventId(request.getEventId())
+          .SetMessage("Too many requests")
+          .SetStatus("429-rate-limited"); // TODO: Use some other proper status returning here
+    }
     // validate schema
     System.out.println(request);
 

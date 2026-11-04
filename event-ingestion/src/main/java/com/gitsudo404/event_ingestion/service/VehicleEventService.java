@@ -24,6 +24,11 @@
 
 package com.gitsudo404.event_ingestion.service;
 
+import com.gitsudo404.event_ingestion.dto.EventMetaData;
+import com.gitsudo404.event_ingestion.dto.VehicleBatteryEventRequestDTO;
+import com.gitsudo404.event_ingestion.dto.VehicleDiagnosticEventRequestDTO;
+import com.gitsudo404.event_ingestion.dto.VehicleEngineTelemetryEventRequestDTO;
+import com.gitsudo404.event_ingestion.dto.VehicleFuelEventRequestDTO;
 import com.gitsudo404.event_ingestion.dto.VehicleGPSEventRequestDTO;
 import com.gitsudo404.event_ingestion.producer.EventPublisher;
 import com.gitsudo404.event_ingestion.producer.KafkaTopic;
@@ -43,9 +48,30 @@ public class VehicleEventService {
     this.objectMapper = objectMapper;
   }
 
-  public CompletableFuture<Void> ingest(VehicleGPSEventRequestDTO request) {
+  public CompletableFuture<Void> ingestGPSEvent(VehicleGPSEventRequestDTO request) {
+    return publish(request, KafkaTopic.VEHICLE_GPS_EVENT);
+  }
+
+  public CompletableFuture<Void> ingestBatteryEvent(VehicleBatteryEventRequestDTO request) {
+    return publish(request, KafkaTopic.VEHICLE_BATTERY_EVENT);
+  }
+
+  public CompletableFuture<Void> ingestFuelEvent(VehicleFuelEventRequestDTO request) {
+    return publish(request, KafkaTopic.VEHICLE_FUEL_EVENT);
+  }
+
+  public CompletableFuture<Void> ingestDiagnosticEvent(VehicleDiagnosticEventRequestDTO request) {
+    return publish(request, KafkaTopic.VEHICLE_DIAGNOSTIC_EVENT);
+  }
+
+  public CompletableFuture<Void> ingestEngineTelemetryEvent(VehicleEngineTelemetryEventRequestDTO request) {
+    return publish(request, KafkaTopic.VEHICLE_ENGINE_TELEMETRY_EVENT);
+  }
+
+  private CompletableFuture<Void> publish(EventMetaData request, KafkaTopic topic) {
     String requestString = objectMapper.writeValueAsString(request);
-    return eventPublisher.publish(KafkaTopic.VEHICLE_GPS_EVENT, request.getEntityId(), requestString)
-        .thenAccept(sendResult -> { });
+    return eventPublisher.publish(topic, request.getEntityId(), requestString)
+        .thenAccept(sendResult -> {
+        });
   }
 }

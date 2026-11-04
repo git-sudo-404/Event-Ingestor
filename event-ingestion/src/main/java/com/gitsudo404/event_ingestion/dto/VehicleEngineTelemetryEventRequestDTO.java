@@ -25,21 +25,21 @@
 package com.gitsudo404.event_ingestion.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 public class VehicleEngineTelemetryEventRequestDTO extends EventMetaData {
 
   @JsonProperty("rpm")
-  @NotBlank
+  @NotNull
   private Float rpm;
 
   @JsonProperty("coolant_temp_c")
-  @NotBlank
-  private String coolantTempC;
+  @NotNull
+  private Float coolantTempC;
 
   @JsonProperty("engine_load_pct")
-  @NotBlank
-  private String engineLoadPct;
+  @NotNull
+  private Float engineLoadPct;
 
   public Float getRpm() {
     return rpm;
@@ -49,19 +49,19 @@ public class VehicleEngineTelemetryEventRequestDTO extends EventMetaData {
     this.rpm = rpm;
   }
 
-  public String getCoolantTempC() {
+  public Float getCoolantTempC() {
     return coolantTempC;
   }
 
-  public void setCoolantTempC(String coolantTempC) {
+  public void setCoolantTempC(Float coolantTempC) {
     this.coolantTempC = coolantTempC;
   }
 
-  public String getEngineLoadPct() {
+  public Float getEngineLoadPct() {
     return engineLoadPct;
   }
 
-  public void setEngineLoadPct(String engineLoadPct) {
+  public void setEngineLoadPct(Float engineLoadPct) {
     this.engineLoadPct = engineLoadPct;
   }
 }

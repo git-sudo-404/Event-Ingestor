@@ -30,7 +30,11 @@ import com.gitsudo404.event_ingestion.middleware.rate_limiter.RateLimiter;
 import com.gitsudo404.event_ingestion.service.VehicleEventService;
 import jakarta.validation.Valid;
 
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -65,20 +69,35 @@ public class VehicleEventController {
   @PostMapping("/gps")
   // TODO: Here any incoming request whose schema doesn't meet the validation
   // would get a 400 and be rejected , add a failover handling here in v2
-  public EventResponseDTO handleVehicleGPSEvent(
+  public CompletableFuture<ResponseEntity<EventResponseDTO>> handleVehicleGPSEvent(
       @Valid @RequestBody VehicleGPSEventRequestDTO request) {
     // check authentication -- will be done by mTLS using nginx
 
     if (!gpsRateLimiter.allowRequest(request.getEntityId())) {
-      return new EventResponseDTO().SetEventId(request.getEventId())
+      EventResponseDTO response = new EventResponseDTO().SetEventId(request.getEventId())
           .SetMessage("Too many requests")
-          .SetStatus("429-rate-limited"); // TODO: Use some other proper status returning here
+          .SetStatus("429-rate-limited");
+      return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS).body(response));
     }
-    // validate schema
-    System.out.println(request);
+    // TODO:validate schem
+    // Add logging
 
-    // EventResponseDTO response =
-    return vehicleEventService.ingest(request);
-    // return response;
+    return vehicleEventService.ingest(request)
+        .orTimeout(10, TimeUnit.SECONDS)
+        .handle((ignored, failure) -> {
+          if (failure != null) {
+            EventResponseDTO response = new EventResponseDTO()
+                .SetEventId(request.getEventId())
+                .SetMessage("Could not confirm event delivery to Kafka")
+                .SetStatus("delivery-failed");
+            return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(response);
+          }
+
+          EventResponseDTO response = new EventResponseDTO()
+              .SetEventId(request.getEventId())
+              .SetMessage("Event accepted by Kafka")
+              .SetStatus("success");
+          return ResponseEntity.ok(response);
+        });
   }
 }

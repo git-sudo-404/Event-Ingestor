@@ -24,9 +24,11 @@
 
 package com.gitsudo404.event_ingestion.service;
 
-import com.gitsudo404.event_ingestion.dto.EventResponseDTO;
 import com.gitsudo404.event_ingestion.dto.VehicleGPSEventRequestDTO;
 import com.gitsudo404.event_ingestion.producer.EventPublisher;
+import com.gitsudo404.event_ingestion.producer.KafkaTopic;
+
+import java.util.concurrent.CompletableFuture;
 import org.springframework.stereotype.Service;
 import tools.jackson.databind.ObjectMapper;
 
@@ -41,10 +43,9 @@ public class VehicleEventService {
     this.objectMapper = objectMapper;
   }
 
-  public EventResponseDTO ingest(VehicleGPSEventRequestDTO request) {
+  public CompletableFuture<Void> ingest(VehicleGPSEventRequestDTO request) {
     String requestString = objectMapper.writeValueAsString(request);
-    eventPublisher.publish(requestString);
-    return new EventResponseDTO()
-        .SetMessage("DUMMMY MEssage").SetStatus("success").SetEventId(request.getEventId());
+    return eventPublisher.publish(KafkaTopic.VEHICLE_GPS_EVENT, request.getEntityId(), requestString)
+        .thenAccept(sendResult -> { });
   }
 }

@@ -36,18 +36,25 @@ import (
 	"time"
 )
 
-func (v *vehicleState) makeVehicleEventRequest(eventJSON []byte) {
+var generatorRunID = strconv.FormatInt(time.Now().UnixNano(), 10)
+
+func (v *vehicleState) eventID() string {
+	return v.VehicleID + "." + generatorRunID + ".event." + strconv.Itoa(int(v.EventNumber))
+}
+
+func (v *vehicleState) makeVehicleEventRequest(eventPath string, eventJSON []byte) {
 	resp, err := v.client.Post(
-		cfg.EventIngestionURL+"/events/vehicle/"+strconv.Itoa(int(v.EventNumber)),
+		cfg.EventIngestionURL+"/api/v1/events/vehicle/"+eventPath,
 		"application/json",
 		bytes.NewReader(eventJSON),
 	)
 	if err != nil {
 		fmt.Println("[ERROR] Error Occured while sending http event from vehicle")
+		return
 	}
 	defer resp.Body.Close()
 	if resp.StatusCode != 200 {
-		fmt.Println("ingestion returned %s", resp.Status)
+		fmt.Println("ingestion returned", resp.Status)
 	}
 	fmt.Println("[LOG] Sending : ", string(eventJSON))
 }
@@ -58,7 +65,7 @@ func (v *vehicleState) generateVehicleGPSEvent() {
 	v.EventNumber += 1
 	GPSEvent := events.NewVehicleGPSEvent()
 	GPSEvent.
-		SetEventID("vehicle.event." + strconv.Itoa(int(v.EventNumber))).
+		SetEventID(v.eventID()).
 		SetEventType(string(events.VehicleGPSEventType)).
 		SetSchemaVersion(int(v.SchemaVersion)).
 		SetSource("vehicle-simulator").
@@ -77,7 +84,7 @@ func (v *vehicleState) generateVehicleGPSEvent() {
 		fmt.Println("[ERROR] Error while Marshaling Vehicle GPSEvent to JSON", err)
 		return
 	}
-	v.makeVehicleEventRequest(GPSEventJSON)
+	v.makeVehicleEventRequest("gps", GPSEventJSON)
 }
 
 func (v *vehicleState) generateVehicleFuelEvent() {
@@ -86,7 +93,7 @@ func (v *vehicleState) generateVehicleFuelEvent() {
 	v.EventNumber += 1
 	FuelEvent := events.NewVehicleFuelEvent()
 	FuelEvent.
-		SetEventID("vehicle.event." + strconv.Itoa(int(v.EventNumber))).
+		SetEventID(v.eventID()).
 		SetEventType(string(events.VehicleFuelEventType)).
 		SetSchemaVersion(int(v.SchemaVersion)).
 		SetSource("vehicle-simulator").
@@ -101,7 +108,7 @@ func (v *vehicleState) generateVehicleFuelEvent() {
 		fmt.Println("[ERROR] Error marshaling Vehicle Fuel Event to JSON", err)
 		return
 	}
-	v.makeVehicleEventRequest(FuelEventJSON)
+	v.makeVehicleEventRequest("fuel", FuelEventJSON)
 }
 
 func (v *vehicleState) generateVehicleBatteryEvent() {
@@ -110,7 +117,7 @@ func (v *vehicleState) generateVehicleBatteryEvent() {
 	v.EventNumber += 1
 	BatteryEvent := events.NewVehicleBatteryEvent()
 	BatteryEvent.
-		SetEventID("vehicle.event." + strconv.Itoa(int(v.EventNumber))).
+		SetEventID(v.eventID()).
 		SetEventType(string(events.VehicleBatteryEventType)).
 		SetSchemaVersion(int(v.SchemaVersion)).
 		SetSource("vehicle-simulator").
@@ -126,7 +133,7 @@ func (v *vehicleState) generateVehicleBatteryEvent() {
 		fmt.Println("[ERROR] Error marshaling Vehicle Battery Event to JSON", err)
 		return
 	}
-	v.makeVehicleEventRequest(BatteryEventJSON)
+	v.makeVehicleEventRequest("battery", BatteryEventJSON)
 }
 
 func (v *vehicleState) generateVehicleEngineTelemetryEvent() {
@@ -135,7 +142,7 @@ func (v *vehicleState) generateVehicleEngineTelemetryEvent() {
 	v.EventNumber += 1
 	EngineTelemetryEvent := events.NewVehicleEngineTelemetryEvent()
 	EngineTelemetryEvent.
-		SetEventID("vehicle.event." + strconv.Itoa(int(v.EventNumber))).
+		SetEventID(v.eventID()).
 		SetEventType(string(events.VehicleEngineTelemetryEventType)).
 		SetSchemaVersion(int(v.SchemaVersion)).
 		SetSource("vehicle-simulator").
@@ -150,7 +157,7 @@ func (v *vehicleState) generateVehicleEngineTelemetryEvent() {
 		fmt.Println("[ERROR] Error marshaling Vehicle Engine Telemetry Event to JSON", err)
 		return
 	}
-	v.makeVehicleEventRequest(EngineTelemetryEventJSON)
+	v.makeVehicleEventRequest("engine-telemetry", EngineTelemetryEventJSON)
 }
 
 func (v *vehicleState) generateVehicleDiagnosticEvent(code string, severity string, description string) {
@@ -159,7 +166,7 @@ func (v *vehicleState) generateVehicleDiagnosticEvent(code string, severity stri
 	v.EventNumber += 1
 	DiagnosticEvent := events.NewVehicleDiagnosticEvent()
 	DiagnosticEvent.
-		SetEventID("vehicle.event." + strconv.Itoa(int(v.EventNumber))).
+		SetEventID(v.eventID()).
 		SetEventType(string(events.VehicleDiagnosticEventType)).
 		SetSchemaVersion(int(v.SchemaVersion)).
 		SetSource("vehicle-simulator").
@@ -174,7 +181,7 @@ func (v *vehicleState) generateVehicleDiagnosticEvent(code string, severity stri
 		fmt.Println("[ERROR] Error marshaling Vehicle Diagnostic Event to JSON", err)
 		return
 	}
-	v.makeVehicleEventRequest(DiagnosticEventJSON)
+	v.makeVehicleEventRequest("diagnostic", DiagnosticEventJSON)
 }
 
 func (v *vehicleState) startGeneratingEvents(ctx context.Context, vehicleEventsWG *sync.WaitGroup, interval time.Duration) {

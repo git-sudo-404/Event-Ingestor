@@ -25,13 +25,20 @@
 package com.gitsudo404.event_ingestion.controller;
 
 import com.gitsudo404.event_ingestion.dto.EventResponseDTO;
+import com.gitsudo404.event_ingestion.dto.EventMetaData;
+import com.gitsudo404.event_ingestion.dto.VehicleBatteryEventRequestDTO;
+import com.gitsudo404.event_ingestion.dto.VehicleDiagnosticEventRequestDTO;
+import com.gitsudo404.event_ingestion.dto.VehicleEngineTelemetryEventRequestDTO;
+import com.gitsudo404.event_ingestion.dto.VehicleFuelEventRequestDTO;
 import com.gitsudo404.event_ingestion.dto.VehicleGPSEventRequestDTO;
 import com.gitsudo404.event_ingestion.middleware.rate_limiter.RateLimiter;
+import com.gitsudo404.event_ingestion.model.VehicleEventType;
 import com.gitsudo404.event_ingestion.service.VehicleEventService;
 import jakarta.validation.Valid;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Supplier;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -67,22 +74,59 @@ public class VehicleEventController {
   }
 
   @PostMapping("/gps")
-  // TODO: Here any incoming request whose schema doesn't meet the validation
-  // would get a 400 and be rejected , add a failover handling here in v2
   public CompletableFuture<ResponseEntity<EventResponseDTO>> handleVehicleGPSEvent(
       @Valid @RequestBody VehicleGPSEventRequestDTO request) {
-    // check authentication -- will be done by mTLS using nginx
+    return handleEvent(request, VehicleEventType.GPS, gpsRateLimiter,
+        () -> vehicleEventService.ingestGPSEvent(request));
+  }
 
-    if (!gpsRateLimiter.allowRequest(request.getEntityId())) {
+  @PostMapping("/battery")
+  public CompletableFuture<ResponseEntity<EventResponseDTO>> handleVehicleBatteryEvent(
+      @Valid @RequestBody VehicleBatteryEventRequestDTO request) {
+    return handleEvent(request, VehicleEventType.BATTERY, batteryRateLimiter,
+        () -> vehicleEventService.ingestBatteryEvent(request));
+  }
+
+  @PostMapping("/fuel")
+  public CompletableFuture<ResponseEntity<EventResponseDTO>> handleVehicleFuelEvent(
+      @Valid @RequestBody VehicleFuelEventRequestDTO request) {
+    return handleEvent(request, VehicleEventType.FUEL, fuelRateLimiter,
+        () -> vehicleEventService.ingestFuelEvent(request));
+  }
+
+  @PostMapping("/diagnostic")
+  public CompletableFuture<ResponseEntity<EventResponseDTO>> handleVehicleDiagnosticEvent(
+      @Valid @RequestBody VehicleDiagnosticEventRequestDTO request) {
+    return handleEvent(request, VehicleEventType.DIAGNOSTIC, diagnosticRateLimiter,
+        () -> vehicleEventService.ingestDiagnosticEvent(request));
+  }
+
+  @PostMapping("/engine-telemetry")
+  public CompletableFuture<ResponseEntity<EventResponseDTO>> handleVehicleEngineTelemetryEvent(
+      @Valid @RequestBody VehicleEngineTelemetryEventRequestDTO request) {
+    return handleEvent(request, VehicleEventType.ENGINE_TELEMETRY, engineTelemetryRateLimiter,
+        () -> vehicleEventService.ingestEngineTelemetryEvent(request));
+  }
+
+  private CompletableFuture<ResponseEntity<EventResponseDTO>> handleEvent(
+      EventMetaData request, VehicleEventType expectedEventType, RateLimiter rateLimiter,
+      Supplier<CompletableFuture<Void>> ingestion) {
+    if (!expectedEventType.matches(request.getEventType())) {
+      EventResponseDTO response = new EventResponseDTO()
+          .SetEventId(request.getEventId())
+          .SetMessage("Event type does not match endpoint")
+          .SetStatus("invalid-event-type");
+      return CompletableFuture.completedFuture(ResponseEntity.badRequest().body(response));
+    }
+
+    if (!rateLimiter.allowRequest(request.getEntityId())) {
       EventResponseDTO response = new EventResponseDTO().SetEventId(request.getEventId())
           .SetMessage("Too many requests")
           .SetStatus("429-rate-limited");
       return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS).body(response));
     }
-    // TODO:validate schem
-    // Add logging
 
-    return vehicleEventService.ingest(request)
+    return ingestion.get()
         .orTimeout(10, TimeUnit.SECONDS)
         .handle((ignored, failure) -> {
           if (failure != null) {

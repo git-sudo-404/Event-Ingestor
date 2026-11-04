@@ -232,7 +232,7 @@ func (v *vehicleState) startGeneratingEvents(ctx context.Context, vehicleEventsW
 			v.generateVehicleDiagnosticEvent("low.fuel", string(events.SeverityCritical), "Fuel is low "+strconv.Itoa(int(v.FuelLevelPct))+"%")
 		}
 		if v.StateOfChargePct <= 10 {
-			v.generateVehicleDiagnosticEvent("low.battery", string(events.SeverityCritical), "Battery is low "+strconv.Itoa(int(v.FuelLevelPct))+"%")
+			v.generateVehicleDiagnosticEvent("low.battery", string(events.SeverityCritical), "Battery is low "+strconv.Itoa(int(v.StateOfChargePct))+"%")
 		}
 		if v.CoolantTempC >= 40 {
 			v.generateVehicleDiagnosticEvent("high.coolant.temp", string(events.SeverityInfo), "Coolant Temperature is high "+strconv.Itoa(int(v.CoolantTempC))+"C")

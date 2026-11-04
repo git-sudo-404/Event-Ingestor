@@ -24,7 +24,10 @@
 
 package com.gitsudo404.event_ingestion.producer;
 
+import java.util.concurrent.CompletableFuture;
+
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -36,7 +39,7 @@ public class EventPublisher {
     this.kafkaTemplate = kafkaTemplate;
   }
 
-  public void publish(String message) {
-    kafkaTemplate.send("vehicle-gps-event", message);
+  public CompletableFuture<SendResult<String, String>> publish(KafkaTopic topic, String vehicleId, String message) {
+    return kafkaTemplate.send(topic.topicName(), vehicleId, message);
   }
 }

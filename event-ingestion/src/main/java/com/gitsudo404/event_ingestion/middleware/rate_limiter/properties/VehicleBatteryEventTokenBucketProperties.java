@@ -47,15 +47,15 @@ public class VehicleBatteryEventTokenBucketProperties implements TokenBucketRate
     return this.refillPeriodS;
   }
 
-  public void getCapacity(Integer capacity) {
+  public void setCapacity(Integer capacity) {
     this.capacity = capacity;
   }
 
-  public void getRefillRate(Integer refillRate) {
+  public void setRefillRate(Integer refillRate) {
     this.refillRate = refillRate;
   }
 
-  public void getRefillPeriodS(Integer refillPeriodS) {
+  public void setRefillPeriodS(Integer refillPeriodS) {
     this.refillPeriodS = refillPeriodS;
   }
 

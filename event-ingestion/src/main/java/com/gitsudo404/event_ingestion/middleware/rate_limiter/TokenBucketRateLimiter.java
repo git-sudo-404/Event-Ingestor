@@ -63,11 +63,11 @@ public class TokenBucketRateLimiter implements RateLimiter {
     String key = this.keyPrefix + ":" + entityId;
     List<Object> redisVals = stringRedisTemplate.opsForHash().multiGet(key, List.of("tokens", "lastRefillMs"));
 
-    double currentMs = System.currentTimeMillis();
+    long currentMs = System.currentTimeMillis();
 
     double tokens = redisVals.get(0) == null ? properties.getCapacity()
         : Double.parseDouble(redisVals.get(0).toString());
-    double lastRefillMs = redisVals.get(1) == null ? currentMs : Double.parseDouble(redisVals.get(1).toString());
+    long lastRefillMs = redisVals.get(1) == null ? currentMs : Long.parseLong(redisVals.get(1).toString());
 
     double elapsedSeconds = Math.max(
         0,
@@ -79,14 +79,15 @@ public class TokenBucketRateLimiter implements RateLimiter {
         properties.getCapacity(),
         tokens + properties.getRefillRate() * elapsedPeriods);
 
-    if (newTokens >= 1.0)
+    boolean allowed = newTokens >= 1.0;
+    if (allowed)
       newTokens -= 1.0;
 
     stringRedisTemplate.opsForHash().putAll(key, Map.of(
-        "tokens", newTokens,
-        "lastRefillMs", currentMs));
+        "tokens", Double.toString(newTokens),
+        "lastRefillMs", Long.toString(currentMs)));
 
-    return newTokens > 1.0;
+    return allowed;
 
   }
 
